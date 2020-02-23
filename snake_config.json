@@ -1,0 +1,15 @@
+{
+"path": "/example/path/kASA_snakemake/",
+"ram": 40,
+"threads": 4,
+"kASA": "/path/to/exec/kASA",
+"content": "/example/path/kASA_snakemake/content.txt",
+"mutationProbabilities": ['0','1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17','18','19', '20'],
+"readLength": 100,
+"Kraken2Path": "/path/to/kraken2/build/",
+"Kraken2MaxDBSize": 32212254720,
+"ClarkPath": "/path/to/clark/",
+"KrakenPath": "/path/to/kraken/build/",
+"CentrifugePath": "/path/to/Centrifuge/centrifuge/bin/",
+"KrakenUniqPath": "/path/to/krakenuniq/build/"
+}

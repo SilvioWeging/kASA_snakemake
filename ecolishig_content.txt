@@ -1,0 +1,2 @@
+NC_000913.3 Escherichia coli str. K-12 substr. MG1655, complete genome	511145	511145	NC_000913.3
+NC_004337.2 Shigella flexneri 2a str. 301 chromosome, complete genome	198214	198214	NC_004337.2

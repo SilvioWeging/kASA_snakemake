@@ -1,0 +1,7 @@
+Homo Sapiens chr1	9606	9606	NC_000001.11
+Mus musculus chr1	10090	10090	NC_000067.6
+Arabidopsis Thaliana chr1	3702	3702	NC_003070.9
+Drosophila melanogaster chr3R	7227	7227	NT_033777.3
+Saccharomyces cerevisiae chrIV	4932	4932	NC_001136.10
+E. Coli	511145	511145	NC_000913.3
+Sulfolobus solfataricus	2287	2287	NZ_LT549890.1

@@ -1,0 +1,9 @@
+{
+"path": "/example/path/kASA_snakemake/",
+"ram": 10,
+"threads": 4,
+"kASA": "/path/to/exec/kASA",
+"content": "/example/path/kASA_snakemake/ecolishig_content.txt",
+"mutationProbability": 0.0,
+"KrakenUniqPath": "/path/to/krakenuniq/build/"
+}
