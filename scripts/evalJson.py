@@ -1,10 +1,10 @@
-import sys, math
+import sys, json, math
 
 contentfile = open(sys.argv[1])
 contentFile_negative = ""
 if sys.argv[2] != "_":
 	contentFile_negative = open(sys.argv[2])
-CentrifugeInput = open(sys.argv[3])
+kASAInput = json.load(open(sys.argv[3])) #at some point I'll have to make that in a more sophisticated way
 resultfile = open(sys.argv[4], 'w')
 
 confusionMatrixPerSpecies = {}
@@ -24,6 +24,7 @@ if contentFile_negative != "":
 			line = line.split("\t")
 			negatives[line[3]] = line[1]
 
+
 sensitivity = 0.0
 specificity = 0.0
 numberOfReads = 0
@@ -31,84 +32,69 @@ numberOfNegReads = 0
 numberOfAssigned = 0
 ambigCounter = 0
 
-dummyCounter = 1
-
-next(CentrifugeInput)
-
-for entry in CentrifugeInput: #this is almost the same code as in evalJson.py
-	entry = entry.rstrip("\r\n")
-	if entry == "":
-		break
-	entry = entry.split("\t")
-	name = ((entry[0]).split(";"))[0]
-	origTax = accToTax[name] if name in accToTax else ""
-	matched = entry[2]
+for entry in kASAInput:
+	name = (entry["Specifier from input file"]).split(";")
+	origTax = accToTax[name[0]] if name[0] in accToTax else ""
+	matched = entry["Top hits"]
 	numberOfReads += 1
 	
-	dummyCounter += 1
-	
-	multipleHits = int(entry[7])
-	matchedTaxIDs = set()
-	if entry[1] != "unclassified" and entry[1] != "species":
-		matchedTaxIDs.add(matched)
-	for i in range(multipleHits - 1):
-		dummyCounter += 1
-		nextLine = ((next(CentrifugeInput)).rstrip("\r\n")).split("\t")
-		if nextLine[1] != "species":
-			matchedTaxIDs.add((nextLine)[2] )
-	if len(matchedTaxIDs) == 1:
-		matched = next(iter(matchedTaxIDs))
-	
 	if origTax != "":
-		if len(matchedTaxIDs) >= 2:
+		if len(matched) >= 2:
+			matchedTaxIDs = []
+			for elem in matched:
+				matchedTaxIDs.append(elem["tax ID"])
 			numberOfAssigned += 1
 			wasHit = False
-			for elem in matchedTaxIDs:
+			for elem in matchedTaxIDs: # any hit taxon is either a true positive, a false positive or the expected taxon a false negative
 				if elem == origTax:
 					ambigCounter += 1
 					sensitivity += 1
 					confusionMatrixPerSpecies[elem][0] += 1
 					wasHit = True
 				else:
-					#print(entry, matchedTaxIDs, dummyCounter)
 					confusionMatrixPerSpecies[elem][2] += 1
 			if not wasHit:
 				confusionMatrixPerSpecies[origTax][3] += 1
-			for spec in confusionMatrixPerSpecies:
+				#print(entry)
+			for spec in confusionMatrixPerSpecies: # everything else is a true negative
 				if spec != origTax and spec not in matchedTaxIDs:
 					confusionMatrixPerSpecies[spec][1] += 1
-		elif len(matchedTaxIDs) == 1:
+		elif len(matched) == 1: # same here but without the loop
 			numberOfAssigned += 1
-			if matched == origTax:
+			if matched[0]["tax ID"] == origTax:
 				sensitivity += 1
-				confusionMatrixPerSpecies[matched][0] += 1
+				confusionMatrixPerSpecies[matched[0]["tax ID"]][0] += 1
 			else:
-				confusionMatrixPerSpecies[matched][2] += 1
+				confusionMatrixPerSpecies[matched[0]["tax ID"]][2] += 1
 				confusionMatrixPerSpecies[origTax][3] += 1
+				#print(entry)
 			for spec in confusionMatrixPerSpecies:
-				if spec != origTax and spec != matched:
+				if spec != origTax and spec != matched[0]["tax ID"]:
 					confusionMatrixPerSpecies[spec][1] += 1
 		else:
-			#assigned = False
+			#assigned == False so it's TN for everything other than the expected taxon
 			confusionMatrixPerSpecies[origTax][3] += 1
 			for spec in confusionMatrixPerSpecies:
 				if spec != origTax:
 					confusionMatrixPerSpecies[spec][1] += 1
 	else:
-		if name in negatives:
+		if name[0] in negatives:
 			numberOfNegReads += 1
-			if entry[1] == "unclassified":
+			if len(matched) == 0:
 				specificity += 1
 				for spec in confusionMatrixPerSpecies:
 					confusionMatrixPerSpecies[spec][1] += 1
 			else:
+				matchedTaxIDs = []
+				for elem in matched:
+					matchedTaxIDs.append(elem["tax ID"]) # gather false positives
 				for elem in matchedTaxIDs:
 					confusionMatrixPerSpecies[elem][2] += 1
 				for spec in confusionMatrixPerSpecies:
 					if spec not in matchedTaxIDs:
 						confusionMatrixPerSpecies[spec][1] += 1
-	
-numberOfReads -= numberOfNegReads
+
+numberOfReads -= numberOfNegReads # for sensitivity and precision, only the matchable reads matter
 
 precision = 0.0
 f1 = 0.0

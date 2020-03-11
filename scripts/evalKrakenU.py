@@ -1,32 +1,46 @@
-import sys
+import sys, math
 
 contentfile = open(sys.argv[1])
-KrakenInput = open(sys.argv[2])
+contentFile_negative = ""
+if sys.argv[2] != "_":
+	contentFile_negative = open(sys.argv[2]) 
 nodesFile = open(sys.argv[3])
-resultfile = open(sys.argv[4], 'w')
+KrakenInput = open(sys.argv[4])
+resultfile = open(sys.argv[5], 'w')
 
+confusionMatrixPerSpecies = {}
 accToTax = {}
 for line in contentfile:
 	line = line.rstrip("\r\n")
 	if line != "":
 		line = line.split("\t")
 		accToTax[line[3]] = line[1]
+		confusionMatrixPerSpecies[line[1]] = [0,0,0,0] # TP,TN,FP,FN
+
+negatives = {}
+if contentFile_negative != "":
+	for line in contentFile_negative:
+		line = line.rstrip("\r\n")
+		if line != "":
+			line = line.split("\t")
+			negatives[line[3]] = line[1]
 
 sensitivity = 0.0
-precision = 0.0
+specificity = 0.0
 numberOfReads = 0
+numberOfNegReads = 0
 numberOfAssigned = 0
 ambigCounter = 0
 
-mapBetweenToGenus = {}
+mapHigherTaxIdsToSpecies = {}
 
-def recursiveAdding(nD, tax, specTaxID):
+def recursiveAdding(acc, nD, tax, specTaxID):
 	if tax in nD and tax != "1":
 		entry = nD[tax]
-		mapBetweenToGenus[entry] = specTaxID
-		recursiveAdding(nD,entry, specTaxID)
+		mapHigherTaxIdsToSpecies[acc][entry] = specTaxID
+		recursiveAdding(acc, nD,entry, specTaxID)
 	else:
-		mapBetweenToGenus[tax] = specTaxID
+		mapHigherTaxIdsToSpecies[acc][tax] = specTaxID
 
 nodesDict = {}
 for line in nodesFile:
@@ -40,61 +54,130 @@ nodesFile.close()
 for acc in accToTax:
 	specTax = accToTax[acc]
 	genusTax = nodesDict[specTax]
-	mapBetweenToGenus[genusTax] = specTax
-	recursiveAdding(nodesDict, genusTax, specTax)
+	mapHigherTaxIdsToSpecies[acc] = {}
+	mapHigherTaxIdsToSpecies[acc][genusTax] = specTax
+	recursiveAdding(acc, nodesDict, genusTax, specTax)
 
 for entry in KrakenInput:
 	entry = entry.rstrip("\r\n")
 	if entry == "":
 		break
 	entry = entry.split("\t")
-	name = entry[1]
-	origTax = accToTax[name]
+	name = ((entry[1]).split(";"))[0]
+	origTax = accToTax[name] if name in accToTax else ""
 	matched = entry[2]
-	ambig = False
-	correct = False
-	assigned = True
-	if entry[0] == "C":
-		if matched == origTax:
-			correct = True
-		else:
-			if matched in mapBetweenToGenus:
-				if mapBetweenToGenus[matched] == origTax:
-					ambig = True
-	else:
-		assigned = False
-		
-	sensitivity += 1 if correct else 0
-	ambigCounter += 1 if ambig else 0
-	numberOfAssigned += 1 if assigned else 0
 	numberOfReads += 1
+	
+	if origTax != "":
+		if entry[0] == "C": #something was hit
+			numberOfAssigned += 1
+			if matched == origTax: #the correct taxon was hit on the correct level
+				sensitivity += 1
+				confusionMatrixPerSpecies[matched][0] += 1
+				for spec in confusionMatrixPerSpecies:
+					if spec != origTax:
+						confusionMatrixPerSpecies[spec][1] += 1
+			else:
+				if matched in mapHigherTaxIdsToSpecies[name]:
+					if mapHigherTaxIdsToSpecies[name][matched] == origTax: #the correct taxon is in the tax path
+						ambigCounter += 1
+						metaTaxon = mapHigherTaxIdsToSpecies[name][matched]
+						#print("correct tax path: ", entry)
+						sensitivity += 1
+						confusionMatrixPerSpecies[metaTaxon][0] += 1
+						for acc in accToTax:
+							if acc != name:
+								if matched in mapHigherTaxIdsToSpecies[acc]: #but everything else inside this tax path is a FP
+									confusionMatrixPerSpecies[accToTax[acc]][2] += 1
+									#print("FP:", accToTax[acc])
+								else:
+									confusionMatrixPerSpecies[accToTax[acc]][1] += 1 #or a TN if it is not inside this path
+									#print("TN:", accToTax[acc])
+					else: #the tax path is wrong, thus everything inside it is a FP
+						#print("incorrect tax path: ", entry)
+						for acc in accToTax:
+							if matched in mapHigherTaxIdsToSpecies[acc]:
+								confusionMatrixPerSpecies[accToTax[acc]][2] += 1
+							else: #and everything outside of it a TN
+								confusionMatrixPerSpecies[accToTax[acc]][1] += 1
+						confusionMatrixPerSpecies[origTax][3] += 1 #since the read was not correctly assigned
+				else: # not matched, thus the matched taxon is a FP and the expected one gets a FN
+					#print("not matched: ", entry)
+					metaTaxon = ""
+					for entry in mapHigherTaxIdsToSpecies: # get corresponding tax id from the content file
+						if matched in mapHigherTaxIdsToSpecies[entry]:
+							metaTaxon = mapHigherTaxIdsToSpecies[entry][matched]
+							break
+					confusionMatrixPerSpecies[metaTaxon][2] += 1
+					confusionMatrixPerSpecies[origTax][3] += 1
+					for spec in confusionMatrixPerSpecies:
+						if spec != origTax and spec != metaTaxon: #everything else is a TN
+							confusionMatrixPerSpecies[spec][1] += 1
+		else:
+			#not assigned, thus only FNs and TNs
+			confusionMatrixPerSpecies[origTax][3] += 1
+			for spec in confusionMatrixPerSpecies:
+				if spec != origTax:
+					confusionMatrixPerSpecies[spec][1] += 1
+	else:
+		if name in negatives:
+			numberOfNegReads += 1
+			if entry[0] == "U":
+				specificity += 1
+				for spec in confusionMatrixPerSpecies:
+					confusionMatrixPerSpecies[spec][1] += 1
+			else:
+				metaTaxon = matched
+				for elem in mapHigherTaxIdsToSpecies: # get corresponding tax id from the content file
+					if matched in mapHigherTaxIdsToSpecies[elem]:
+						metaTaxon = mapHigherTaxIdsToSpecies[elem][matched]
+						break
+				#print(entry)
+				confusionMatrixPerSpecies[metaTaxon][2] += 1
+				for spec in confusionMatrixPerSpecies:
+					if spec != metaTaxon:
+						confusionMatrixPerSpecies[spec][1] += 1
+	
+	
+numberOfReads -= numberOfNegReads
 
-#numberOfReads -= ambigCounter
-truePositives = sensitivity
-falsePositives = numberOfAssigned - sensitivity - ambigCounter
-
-if numberOfReads > 0:
+precision = 0.0
+f1 = 0.0
+if numberOfReads > 0 and numberOfAssigned > 0:
 	precision = sensitivity / numberOfAssigned
 	sensitivity = sensitivity / numberOfReads
+	f1 = 2*(sensitivity*precision)/(sensitivity+precision)
 
-resultfile.write("Result:\nSensitivity: " + str(sensitivity) + "\nPrecision: " + str(precision) +"\nTrue positives: " + str(truePositives) + "\nFalse positives: " + str(falsePositives) + "\nAmbiguous Reads: " + str(ambigCounter) + "\nNumber of Reads: " + str(numberOfReads) + "\n")
+if numberOfNegReads > 0:
+	specificity = specificity / numberOfNegReads
 
-#resultfile.write("Result:\nSensitivity: " + str(sensitivity) + "\nPrecision: " + str(precision) +"\nTrue positives: " + str(truePositives) + "\nFalse positives or abstracted taxa: " + str(falsePositives) + "\nNumber of Reads: " + str(numberOfReads) + "\n")
+MetaMCC = 0.0
+MCCs = []
+for entry in confusionMatrixPerSpecies:
+	TP = confusionMatrixPerSpecies[entry][0]
+	TN = confusionMatrixPerSpecies[entry][1]
+	FP = confusionMatrixPerSpecies[entry][2]
+	FN = confusionMatrixPerSpecies[entry][3]
+	#print(entry, TP, TN, FP, FN)
+	MCC = 0
+	if (TN > 0 or TP > 0) and (TP+FP)*(TP+FN)*(TN+FP)*(TN+FN) > 0:
+		MCC = (TP*TN - FP*FN)/math.sqrt((TP+FP)*(TP+FN)*(TN+FP)*(TN+FN))
+	MetaMCC += MCC
+	MCCs.append((entry,MCC))
+
+MetaMCC = MetaMCC / len(confusionMatrixPerSpecies)
 
 
-# import sys
+resultfile.write("Result:\nSensitivity: " + str(sensitivity) 
++ "\nPrecision: " + str(precision) 
++ "\nSpecificity: " + str(specificity) 
++ "\nF1: " + str(f1)
++ "\nMCC: "+ str(MetaMCC) 
++ "\nAmbiguous Reads: " + str(ambigCounter) 
++ "\nNumber of Reads: " + str(numberOfReads) 
++ "\nNumber of negative Reads: " + str(numberOfNegReads) 
++ "\n\n")
 
-# KUfile = open(sys.argv[1])
-
-# histo = {}
-
-# for line in KUfile:
-	# line = line.split("\t")
-	# if line[2] in histo:
-		# histo[line[2]] += 1
-	# else:
-		# histo[line[2]] = 1
-
-# outfile = open(sys.argv[2], 'w')
-# for entry in histo:
-	# outfile.write(entry + "\t" + str(histo[entry]) + "\n")
+resultfile.write("MCCs:\n")
+for entry in MCCs:
+	resultfile.write(entry[0] + "\t" + str(entry[1]) + "\n")

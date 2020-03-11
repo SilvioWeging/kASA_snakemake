@@ -4,5 +4,5 @@
 "threads": 4,
 "kASA": "/path/to/exec/kASA",
 "content": "/example/path/kASA_snakemake/content.txt",
-"mutationProbability": 10.0,
+"mutationProbability": 10.0
 }

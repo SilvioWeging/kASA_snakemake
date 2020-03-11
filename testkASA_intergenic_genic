@@ -42,10 +42,10 @@ rule downloadGenomeAndGffs:
 			for accnr in accnrs.split(";"):
 				if accnr != "":
 					callToWget =  "\"https://www.ncbi.nlm.nih.gov/sviewer/viewer.cgi?db=nuccore&report=fasta&id=" + accnr + "\""
-					callToShell = "if [[ `wget -S --spider " + callToWget + " 2>&1 | grep 'HTTP/1.1 200 OK'` ]]; then wget -nc -O " + config["path"]+"genomes/" + accnr + ".fasta " + callToWget + " || true; fi"
+					callToShell = "if [[ `wget -S --spider " + callToWget + " 2>&1 | grep 'HTTP/1.1 200 OK'` ]]; then wget -nc -O " + config["path"]+"genomes/" + accnr + ".fasta " + callToWget + "; fi"
 					shell(callToShell)#genome
 					callToWget =  "\"https://www.ncbi.nlm.nih.gov/sviewer/viewer.cgi?db=nuccore&report=gff3&id=" + accnr + "\""
-					callToShell = "if [[ `wget -S --spider " + callToWget + " 2>&1 | grep 'HTTP/1.1 200 OK'` ]]; then wget -nc -O " + config["path"]+"gffs/" + accnr + ".gff " + callToWget + " || true; fi"
+					callToShell = "if [[ `wget -S --spider " + callToWget + " 2>&1 | grep 'HTTP/1.1 200 OK'` ]]; then wget -nc -O " + config["path"]+"gffs/" + accnr + ".gff " + callToWget + "; fi"
 					shell(callToShell)#gff
 
 rule downloadTaxData:
@@ -107,7 +107,7 @@ rule mutateAndGenerateFastq:
 largeFastqFlag=True
 
 if config["kASA"] != "":
-	include: config["path"] + "rules/kASA.smk"
+	include: config["path"] + "rules/kASA_ig_g.smk"
 
 #if config["Kraken2Path"] != "":
 	#include: config["path"] + "rules/kraken2.smk"

@@ -29,6 +29,7 @@ rule createAllFolders:
 		mkdir -p {config[path]}results
 		mkdir -p {config[path]}temporary
 		mkdir -p {config[path]}genomes
+		mkdir -p {config[path]}negatives
 		mkdir -p {config[path]}index
 		mkdir -p {config[path]}index/taxonomy
 		mkdir -p {config[path]}done
@@ -70,6 +71,17 @@ rule downloadGenome:
 					callToWget =  "\"https://www.ncbi.nlm.nih.gov/sviewer/viewer.cgi?db=nuccore&report=fasta&id=" + accnr + "\""
 					callToShell = "if [[ `wget -S --spider " + callToWget + " 2>&1 | grep 'HTTP/1.1 200 OK'` ]]; then wget -nc -O " + config["path"]+"genomes/" + accnr + ".fasta " + callToWget + " || true; fi"
 					shell(callToShell)#genome
+		contentFile = open(config["contentNegative"])
+		for line in contentFile:
+			line = line.rstrip("\r\n")
+			if line == "":
+				continue
+			accnrs = (line.split("\t"))[3]
+			for accnr in accnrs.split(";"):
+				if accnr != "":
+					callToWget =  "\"https://www.ncbi.nlm.nih.gov/sviewer/viewer.cgi?db=nuccore&report=fasta&id=" + accnr + "\""
+					callToShell = "if [[ `wget -S --spider " + callToWget + " 2>&1 | grep 'HTTP/1.1 200 OK'` ]]; then wget -nc -O " + config["path"]+"negatives/" + accnr + ".fasta " + callToWget + " || true; fi"
+					shell(callToShell)#genome
 
 rule catEverythingTogether:
 	input:
@@ -79,6 +91,10 @@ rule catEverythingTogether:
 	shell:
 		"""
 		for file in {config[path]}genomes/*
+		do
+			cat $file >> {config[path]}merged.fasta
+		done
+		for file in {config[path]}negatives/*
 		do
 			cat $file >> {config[path]}merged.fasta
 		done

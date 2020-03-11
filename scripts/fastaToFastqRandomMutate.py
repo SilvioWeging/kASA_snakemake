@@ -9,10 +9,10 @@ def testIfStringIsValid(bases):
 
 def mutateSequence(bases, mutationprob, readLength):
 	basesArray = {}
-	basesArray["A"] = ["C","G","T"]
-	basesArray["C"] = ["A","G","T"]
-	basesArray["G"] = ["A","C","T"]
-	basesArray["T"] = ["A","C","G"]
+	basesArray["A"] = ["C","G","T", "", "AA", "AG", "AT", "AC"]
+	basesArray["C"] = ["A","G","T", "", "CA", "CG", "CT", "CC"]
+	basesArray["G"] = ["A","C","T", "", "GA", "GG", "GT", "GC"]
+	basesArray["T"] = ["A","C","G", "", "TA", "TG", "TT", "TC"]
 	lengthOfLS = len(bases)
 	numOfMutations = int(float(lengthOfLS)/readLength * mutationprob)
 	randIndices = random.sample(range(lengthOfLS), numOfMutations)
@@ -34,12 +34,17 @@ def generateReads(fastqFile, numberOfReads, name, bases, mutationprob, readLengt
 	if numberOfReads == 0:
 		numberOfReads = lengthOfLS / windowSize
 	
+	name = name.split(" ")
 	counter = 0
 	while counter < numberOfReads:
 		randIndex = random.randrange(lengthOfLS-windowSize)
 		chunk = bases[randIndex:randIndex+windowSize]
 		if testIfStringIsValid(chunk):
-			fastqFile.write('@' + name + " " + str(counter)  + '\n')
+			accAndCounter = name[0] + ";" + str(counter)
+			concatName = accAndCounter + " "
+			for i in range(1,len(name)):
+				concatName += name[i] + " "
+			fastqFile.write('@' + concatName + '\n')
 			if mutationprob > 0.0:
 				chunk = mutateSequence(chunk, mutationprob, readLength)
 			fastqFile.write(chunk)
@@ -94,7 +99,7 @@ def fastaToFastqRandomMutate(argv):
 				line = line.lstrip('>')
 				# write into fastq
 				if len(bases) > readLength and testIfStringIsValid(bases):
-					generateReads(fastqFile, numberOfReads, name, bases, mutationprob, readLength)
+					generateReads(fastqFile, numberOfReads, line, bases, mutationprob, readLength)
 				
 				name = line
 				bases = ""

@@ -1,0 +1,3 @@
+Phaeodactylum tricornutum chr1	2850	2850	NC_011669.1
+Acinetobacter baumanii	470	470	NZ_CP009257.1
+Tobacco mosaic virus	12242	12242	NC_001367.1
