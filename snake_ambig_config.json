@@ -3,6 +3,7 @@
 "ram": 10,
 "threads": 4,
 "kASA": "/path/to/exec/kASA",
+"kASAParameters": "--six",
 "content": "/example/path/kASA_snakemake/ecolishig_content.txt",
 "contentNegative": "_",
 "mutationProbability": 0.0,
