@@ -60,6 +60,7 @@ rule downloadGenome:
 	output:
 		touch(config["path"]+"done/download.done")
 	run:
+		import urllib.request
 		contentFile = open(config["content"])
 		for line in contentFile:
 			line = line.rstrip("\r\n")
@@ -68,9 +69,10 @@ rule downloadGenome:
 			accnrs = (line.split("\t"))[3]
 			for accnr in accnrs.split(";"):
 				if accnr != "":
-					callToWget =  "\"https://www.ncbi.nlm.nih.gov/sviewer/viewer.cgi?db=nuccore&report=fasta&id=" + accnr + "\""
-					callToShell = "if [[ `wget -S --spider " + callToWget + " 2>&1 | grep 'HTTP/1.1 200 OK'` ]]; then wget -nc -O " + config["path"]+"genomes/" + accnr + ".fasta " + callToWget + " || true; fi"
-					shell(callToShell)#genome
+					outfileForGenome = open(config["path"]+"genomes/" + accnr + ".fasta", 'wb')
+					callToNCBI = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=nuccore&id=" + accnr + "&rettype=fasta&retmode=text"
+					outfileForGenome.write((urllib.request.urlopen(callToNCBI)).read())#genome
+					outfileForGenome.close()
 		contentFile = open(config["contentNegative"])
 		for line in contentFile:
 			line = line.rstrip("\r\n")
@@ -79,9 +81,10 @@ rule downloadGenome:
 			accnrs = (line.split("\t"))[3]
 			for accnr in accnrs.split(";"):
 				if accnr != "":
-					callToWget =  "\"https://www.ncbi.nlm.nih.gov/sviewer/viewer.cgi?db=nuccore&report=fasta&id=" + accnr + "\""
-					callToShell = "if [[ `wget -S --spider " + callToWget + " 2>&1 | grep 'HTTP/1.1 200 OK'` ]]; then wget -nc -O " + config["path"]+"negatives/" + accnr + ".fasta " + callToWget + " || true; fi"
-					shell(callToShell)#genome
+					outfileForGenome = open(config["path"]+"negatives/" + accnr + ".fasta", 'wb')
+					callToNCBI = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=nuccore&id=" + accnr + "&rettype=fasta&retmode=text"
+					outfileForGenome.write((urllib.request.urlopen(callToNCBI)).read())#genome
+					outfileForGenome.close()
 
 rule catEverythingTogether:
 	input:

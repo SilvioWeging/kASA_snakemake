@@ -37,12 +37,12 @@ rule createIndex:
 		# ram = config["ram"]
 	# shell:
 		# """
-		# (/usr/bin/time {config[kASA]} identify -c {input.contentFile} -d {input.index} -i {config[path]}fastqs/ -q {config[path]}results/kASA_7_{appendToFileName} -t {config[path]}temporary/ -n {threads} -m {params.ram} -r -k 12 7) &>> {config[path]}/benchmarks/kASA_7.txt
-		# (/usr/bin/time {config[kASA]} identify -c {input.contentFile} -d {input.index} -i {config[path]}fastqs/ -q {config[path]}results/kASA_8_{appendToFileName} -t {config[path]}temporary/ -n {threads} -m {params.ram} -r -k 12 8) &>> {config[path]}/benchmarks/kASA_8.txt
-		# (/usr/bin/time {config[kASA]} identify -c {input.contentFile} -d {input.index} -i {config[path]}fastqs/ -q {config[path]}results/kASA_9_{appendToFileName} -t {config[path]}temporary/ -n {threads} -m {params.ram} -r -k 12 9) &>> {config[path]}/benchmarks/kASA_9.txt
-		# (/usr/bin/time {config[kASA]} identify -c {input.contentFile} -d {input.index} -i {config[path]}fastqs/ -q {config[path]}results/kASA_10_{appendToFileName} -t {config[path]}temporary/ -n {threads} -m {params.ram} -r -k 12 10) &>> {config[path]}/benchmarks/kASA_10.txt
-		# (/usr/bin/time {config[kASA]} identify -c {input.contentFile} -d {input.index} -i {config[path]}fastqs/ -q {config[path]}results/kASA_11_{appendToFileName} -t {config[path]}temporary/ -n {threads} -m {params.ram} -r -k 12 11) &>> {config[path]}/benchmarks/kASA_11.txt
-		# (/usr/bin/time {config[kASA]} identify -c {input.contentFile} -d {input.index} -i {config[path]}fastqs/ -q {config[path]}results/kASA_12_{appendToFileName} -t {config[path]}temporary/ -n {threads} -m {params.ram} -r -k 12 12) &>> {config[path]}/benchmarks/kASA_12.txt
+		# (/usr/bin/time {config[kASA]} identify -c {input.contentFile} -d {input.index} -i {config[path]}fastqs/ -q {config[path]}results/kASA_7_{appendToFileName} -t {config[path]}temporary/ -n {threads} -m {params.ram} -r -k 12 7 {config[kASAParameters]}) &>> {config[path]}/benchmarks/kASA_7.txt
+		# (/usr/bin/time {config[kASA]} identify -c {input.contentFile} -d {input.index} -i {config[path]}fastqs/ -q {config[path]}results/kASA_8_{appendToFileName} -t {config[path]}temporary/ -n {threads} -m {params.ram} -r -k 12 8 {config[kASAParameters]}) &>> {config[path]}/benchmarks/kASA_8.txt
+		# (/usr/bin/time {config[kASA]} identify -c {input.contentFile} -d {input.index} -i {config[path]}fastqs/ -q {config[path]}results/kASA_9_{appendToFileName} -t {config[path]}temporary/ -n {threads} -m {params.ram} -r -k 12 9 {config[kASAParameters]}) &>> {config[path]}/benchmarks/kASA_9.txt
+		# (/usr/bin/time {config[kASA]} identify -c {input.contentFile} -d {input.index} -i {config[path]}fastqs/ -q {config[path]}results/kASA_10_{appendToFileName} -t {config[path]}temporary/ -n {threads} -m {params.ram} -r -k 12 10 {config[kASAParameters]}) &>> {config[path]}/benchmarks/kASA_10.txt
+		# (/usr/bin/time {config[kASA]} identify -c {input.contentFile} -d {input.index} -i {config[path]}fastqs/ -q {config[path]}results/kASA_11_{appendToFileName} -t {config[path]}temporary/ -n {threads} -m {params.ram} -r -k 12 11 {config[kASAParameters]}) &>> {config[path]}/benchmarks/kASA_11.txt
+		# (/usr/bin/time {config[kASA]} identify -c {input.contentFile} -d {input.index} -i {config[path]}fastqs/ -q {config[path]}results/kASA_12_{appendToFileName} -t {config[path]}temporary/ -n {threads} -m {params.ram} -r -k 12 12 {config[kASAParameters]}) &>> {config[path]}/benchmarks/kASA_12.txt
 		# """
 
 rule identify:

@@ -1,7 +1,7 @@
 import sys, json
 
 contentfile = open(sys.argv[1])
-kASAInput = json.load(open(sys.argv[2])) #at some point I'll have to make that in a more sophisticated way
+kASAInput = open(sys.argv[2])
 resultfile = open(sys.argv[3], 'w')
 
 accToTax = {}
@@ -25,7 +25,8 @@ numberOfAssigned_g = 0
 ambig_g = 0
 
 
-for entry in kASAInput:
+for line in kASAInput:
+	entry = json.loads(line)
 	name = (entry["Specifier from input file"]).split(" ")
 	name[0] = ((name[0]).split(";"))[0]
 	origTax = accToTax[name[0]] if name[0] in accToTax else ""

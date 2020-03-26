@@ -41,10 +41,12 @@ rule downloadGenomeAndGffs:
 			accnrs = (line.split("\t"))[3]
 			for accnr in accnrs.split(";"):
 				if accnr != "":
-					callToWget =  "\"https://www.ncbi.nlm.nih.gov/sviewer/viewer.cgi?db=nuccore&report=fasta&id=" + accnr + "\""
-					callToShell = "if [[ `wget -S --spider " + callToWget + " 2>&1 | grep 'HTTP/1.1 200 OK'` ]]; then wget -nc -O " + config["path"]+"genomes/" + accnr + ".fasta " + callToWget + "; fi"
-					shell(callToShell)#genome
-					callToWget =  "\"https://www.ncbi.nlm.nih.gov/sviewer/viewer.cgi?db=nuccore&report=gff3&id=" + accnr + "\""
+					outfileForGenome = open(config["path"]+"genomes/" + accnr + ".fasta", 'wb')
+					callToNCBI = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=nuccore&id=" + accnr + "&rettype=fasta&retmode=text"
+					outfileForGenome.write((urllib.request.urlopen(callToNCBI)).read())#genome
+					outfileForGenome.close()
+					
+					callToWget =  "\"https://www.ncbi.nlm.nih.gov/sviewer/viewer.cgi?db=nuccore&report=gff3&id=" + accnr + "\"" #eutils doesn't offer gff3 format output
 					callToShell = "if [[ `wget -S --spider " + callToWget + " 2>&1 | grep 'HTTP/1.1 200 OK'` ]]; then wget -nc -O " + config["path"]+"gffs/" + accnr + ".gff " + callToWget + "; fi"
 					shell(callToShell)#gff
 

@@ -4,7 +4,7 @@ contentfile = open(sys.argv[1])
 contentFile_negative = ""
 if sys.argv[2] != "_":
 	contentFile_negative = open(sys.argv[2])
-kASAInput = json.load(open(sys.argv[3])) #at some point I'll have to make that in a more sophisticated way
+kASAInput = open(sys.argv[3])
 resultfile = open(sys.argv[4], 'w')
 
 confusionMatrixPerSpecies = {}
@@ -32,7 +32,8 @@ numberOfNegReads = 0
 numberOfAssigned = 0
 ambigCounter = 0
 
-for entry in kASAInput:
+for line in kASAInput:
+	entry = json.loads(line)
 	name = (entry["Specifier from input file"]).split(";")
 	origTax = accToTax[name[0]] if name[0] in accToTax else ""
 	matched = entry["Top hits"]

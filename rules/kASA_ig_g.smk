@@ -36,7 +36,7 @@ rule identify:
 	params:
 		ram = config["ram"]
 	shell:
-		"{config[kASA]} identify -c {input.contentFile} -d {input.index} -i {config[path]}fastqs/ -q {config[path]}results/kASA_{appendToFileName} -t {config[path]}temporary/ -n {threads} -m {params.ram} -r -v"
+		"{config[kASA]} identify -c {input.contentFile} -d {input.index} -i {config[path]}fastqs/ -q {config[path]}results/kASA_{appendToFileName} -t {config[path]}temporary/ -n {threads} -m {params.ram} -r -v {config[kASAParameters]}"
 
 rule computeSensAndPrec:
 	input:

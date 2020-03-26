@@ -3,6 +3,7 @@
 "ram": 30,
 "threads": 4,
 "kASA": "/path/to/exec/kASA",
+"kASAParameters": "--jsonl",
 "content": "/example/path/kASA_snakemake/content.txt",
 "mutationProbability": 10.0
 }
