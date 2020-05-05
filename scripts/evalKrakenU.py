@@ -57,6 +57,7 @@ for acc in accToTax:
 	mapHigherTaxIdsToSpecies[acc] = {}
 	mapHigherTaxIdsToSpecies[acc][genusTax] = specTax
 	recursiveAdding(acc, nodesDict, genusTax, specTax)
+	mapHigherTaxIdsToSpecies[acc][specTax] = specTax
 
 for entry in KrakenInput:
 	entry = entry.rstrip("\r\n")
@@ -67,6 +68,7 @@ for entry in KrakenInput:
 	origTax = accToTax[name] if name in accToTax else ""
 	matched = entry[2]
 	numberOfReads += 1
+	
 	
 	if origTax != "":
 		if entry[0] == "C": #something was hit

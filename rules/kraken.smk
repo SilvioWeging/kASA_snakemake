@@ -53,6 +53,6 @@ rule evalkraken:
 		do
 			temp=${{file#${{path}}results/}}
 			filename=${{temp%.tsv}}
-			python ${{path}}scripts/evalKrakenU.py {config[content]} ${{file}} {config[path]}index/taxonomy/nodes.dmp ${{path}}results/${{filename}}_result.txt
+			python ${{path}}scripts/evalKrakenU.py {config[content]} {config[contentNegative]} {config[path]}index/taxonomy/nodes.dmp ${{file}} ${{path}}results/${{filename}}_result.txt
 		done
 		"""

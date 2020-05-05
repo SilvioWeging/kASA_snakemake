@@ -3,7 +3,6 @@ rule Centrifuge_build:
 	input:
 		db = config["path"] + "done/download.done",
 		tax = config["path"]+"done/downloadTaxData.done",
-		largeFasta = config["path"]+"merged.fasta"
 	output:
 		touch(config["path"] + "done/Centrifuge_build.done")
 	threads: config["threads"]
@@ -12,8 +11,12 @@ rule Centrifuge_build:
 	shell:
 		"""
 		mkdir -p {config[path]}index/Centrifuge
+		for file in {config[path]}genomes/*
+		do
+			cat $file >> {config[path]}merged_centrifuge.fasta
+		done
 		sed -n '1!p' {config[path]}index/taxonomy/custom.accession2taxid | cut -f 2,3 > {config[path]}index/taxonomy/centrifuge.acc2tax
-		{config[CentrifugePath]}centrifuge-build -p {threads} --conversion-table {config[path]}index/taxonomy/centrifuge.acc2tax --taxonomy-tree {config[path]}index/taxonomy/nodes.dmp --name-table {config[path]}index/taxonomy/names.dmp {input.largeFasta} {config[path]}index/Centrifuge/Centrifuge
+		{config[CentrifugePath]}centrifuge-build -p {threads} --conversion-table {config[path]}index/taxonomy/centrifuge.acc2tax --taxonomy-tree {config[path]}index/taxonomy/nodes.dmp --name-table {config[path]}index/taxonomy/names.dmp {config[path]}merged_centrifuge.fasta {config[path]}index/Centrifuge/Centrifuge
 		"""
 
 rule Centrifuge_identify:
@@ -48,6 +51,6 @@ rule evalCentrifuge:
 		do
 			temp=${{file#${{path}}results/}}
 			filename=${{temp%.tsv}}
-			python ${{path}}scripts/evalCentrifuge.py {config[content]} ${{file}} {config[path]}index/taxonomy/nodes.dmp ${{path}}results/${{filename}}_result.txt
+			python ${{path}}scripts/evalCentrifuge.py {config[content]} {config[contentNegative]} ${{file}} ${{path}}results/${{filename}}_result.txt
 		done
 		"""

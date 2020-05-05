@@ -98,8 +98,9 @@ def fastaToFastqRandomMutate(argv):
 			if '>' in line:
 				line = line.lstrip('>')
 				# write into fastq
+				#print(line, bases)
 				if len(bases) > readLength and testIfStringIsValid(bases):
-					generateReads(fastqFile, numberOfReads, line, bases, mutationprob, readLength)
+					generateReads(fastqFile, numberOfReads, name, bases, mutationprob, readLength)
 				
 				name = line
 				bases = ""

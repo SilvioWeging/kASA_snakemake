@@ -2,14 +2,14 @@
 
 appendToFileName = ""
 if largeFastqFlag:
-	appendToFileName = "merged.json"
+	appendToFileName = "merged.jsonl"
 
 rule createIndex:
 	input:
 		contentFile = config["content"],
 		genomesAreReady = config["path"]+"done/download.done"
 	output:
-		index = config["path"]+"index/kASA/index",
+		index = config["path"]+"index/kASA/index_s",
 		kASAFinished = touch(config["path"]+"done/kASA_index.done")
 	threads: config["threads"]
 	benchmark:
@@ -19,7 +19,13 @@ rule createIndex:
 	shell:
 		"""
 		mkdir -p {config[path]}index/kASA
-		{config[kASA]} build -c {input.contentFile} -d {output.index} -i {config[path]}genomes/ -t {config[path]}temporary/ -n {threads} -m {params.ram}
+		{config[kASA]} build -c {input.contentFile} -d {config[path]}index/kASA/index -i {config[path]}genomes/ -t {config[path]}temporary/ -n {threads} -m {params.ram}
+		{config[kASA]} shrink -c {input.contentFile} -d  {config[path]}index/kASA/index -o {output.index} -s 2 -t {config[path]}temporary/
+		rm {config[path]}index/kASA/index
+		rm {config[path]}index/kASA/index_info.txt
+		rm {config[path]}index/kASA/index_trie
+		rm {config[path]}index/kASA/index_trie.txt
+		rm {config[path]}index/kASA/index_f.txt
 		"""
 
 # rule identify:
@@ -48,7 +54,7 @@ rule createIndex:
 rule identify:
 	input:
 		contentFile = config["content"],
-		index = config["path"]+"index/kASA/index",
+		index = config["path"]+"index/kASA/index_s",
 		indexDone = config["path"]+"done/kASA_index.done",
 		largeFastq = config["path"]+"done/fastqs.done"
 	output:
@@ -63,7 +69,7 @@ rule identify:
 		{config[kASA]} identify -c {input.contentFile} -d {input.index} -i {config[path]}fastqs/ -q {config[path]}results/kASA_{appendToFileName} -t {config[path]}temporary/ -n {threads} -m {params.ram} -r {config[kASAParameters]}
 		"""
 
-rule computeSensAndPrec:
+rule evalkASA:
 	input:
 		result = config["path"]+"done/kASA_identification.done"
 	output:
@@ -71,7 +77,7 @@ rule computeSensAndPrec:
 	shell:
 		"""
 		path={config[path]}
-		for file in ${{path}}results/kASA_*.json
+		for file in ${{path}}results/kASA_*.jsonl
 		do
 			temp=${{file#${{path}}results/}}
 			filename=${{temp%.json}}

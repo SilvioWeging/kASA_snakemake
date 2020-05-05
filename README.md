@@ -29,6 +29,8 @@ It downloads genomes given inside the content file, creates indices for every to
 
 The results are given inside the folder `results` (which is created during the benchmark). Scripts for the evaluation can be found inside the `scripts` folder. Measurements of time and memory consumption are saved inside the `benchmarks` folder for the index creation and identification step of every tool.
 
+If the evaluation of the Centrifuge script should fail then the building step of the tool had a hiccup and "forgot" to assign certain tax IDs. Just run the building step again and it should work...
+
 ### testAmbiguous
 
 Very similar genomes tend to confuse identification tools with low sensitivity. This test can be used to benchmark kASA (and KrakenUniq) for those edge cases where two or more genomes are very similar.

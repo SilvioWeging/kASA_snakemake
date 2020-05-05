@@ -7,6 +7,11 @@ if sys.argv[2] != "_":
 kASAInput = open(sys.argv[3])
 resultfile = open(sys.argv[4], 'w')
 
+threshold = 0.0
+if len(sys.argv) == 6:
+	threshold = float(sys.argv[5])
+
+
 confusionMatrixPerSpecies = {}
 accToTax = {}
 for line in contentfile:
@@ -38,6 +43,11 @@ for line in kASAInput:
 	origTax = accToTax[name[0]] if name[0] in accToTax else ""
 	matched = entry["Top hits"]
 	numberOfReads += 1
+	
+	#thresholding
+	if len(matched) > 0:
+		if float(matched[0]["Relative Score"]) < threshold:
+			matched = []
 	
 	if origTax != "":
 		if len(matched) >= 2:
