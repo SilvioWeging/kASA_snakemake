@@ -31,14 +31,14 @@ rule createIndex:
 # rule identify:
 	# input:
 		# contentFile = config["content"],
-		# index = config["path"]+"index/kASA/index",
+		# index = config["path"]+"index/kASA/index_s",
 		# indexDone = config["path"]+"done/kASA_index.done",
 		# largeFastq = config["path"]+"done/fastqs.done"
 	# output:
 		# touch(config["path"]+"done/kASA_identification.done")
 	# threads: config["threads"]
 	# benchmark:
-		# config["path"] + "benchmarks/kASA_identify.txt"
+		# config["path"] + "benchmarks/kASA_identify_multiple.txt"
 	# params:
 		# ram = config["ram"]
 	# shell:
@@ -80,7 +80,7 @@ rule evalkASA:
 		for file in ${{path}}results/kASA_*.jsonl
 		do
 			temp=${{file#${{path}}results/}}
-			filename=${{temp%.json}}
+			filename=${{temp%.jsonl}}
 			python ${{path}}scripts/evalJson.py {config[content]} {config[contentNegative]} ${{file}} ${{path}}results/${{filename}}_result.txt &
 		done
 		wait

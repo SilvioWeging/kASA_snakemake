@@ -18,12 +18,12 @@ mutationrates = set()
 for file in os.listdir(path):
 	if "result" in file:
 		filenameArr = file.split("_")
-		if "kASA" in filenameArr:
-			tool = filenameArr[0] + "_" + filenameArr[1]
-			mutationrate = filenameArr[3]
-		else:
-			tool = filenameArr[0]
-			mutationrate = filenameArr[2]
+		#if "kASA" in filenameArr:
+		#	tool = filenameArr[0] + "_" + filenameArr[1]
+		#	mutationrate = filenameArr[3]
+		#else:
+		tool = filenameArr[0]
+		mutationrate = filenameArr[2]
 		
 		toolNames.add(tool)
 		mutationrates.add(int(mutationrate))
@@ -57,12 +57,12 @@ for entry in mutationrates:
 for file in os.listdir(path):
 	if "result" in file:
 		filenameArr = file.split("_")
-		if "kASA" in filenameArr:
-			tool = filenameArr[0] + "_" + filenameArr[1]
-			mutationrate = filenameArr[3]
-		else:
-			tool = filenameArr[0]
-			mutationrate = filenameArr[2]
+		#if "kASA" in filenameArr:
+		#	tool = filenameArr[0] + "_" + filenameArr[1]
+		#	mutationrate = filenameArr[3]
+		#else:
+		tool = filenameArr[0]
+		mutationrate = filenameArr[2]
 		
 		row = tools[tool]
 		col = mutations[mutationrate]

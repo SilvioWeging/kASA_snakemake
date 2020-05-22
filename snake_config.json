@@ -1,7 +1,7 @@
 {
 "path": "/example/path/kASA_snakemake/",
 "ram": 40,
-"threads": 4,
+"threads": 8,
 "kASA": "/path/to/exec/kASA",
 "kASAParameters": "--jsonl",
 "content": "/example/path/kASA_snakemake/content.txt",
