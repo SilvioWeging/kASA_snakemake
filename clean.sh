@@ -6,5 +6,6 @@ rm -r -f index/*
 rm -f fastqs/*
 rm -f merged.fasta
 rm -f merged_centrifuge.fasta
+rm -f merged_metacache.fasta
 rm -f done/*
 rm -f benchmarks/*

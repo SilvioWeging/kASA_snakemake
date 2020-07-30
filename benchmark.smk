@@ -15,6 +15,10 @@ def tools():
 		listOfTools.append(config["path"] + "done/Centrifuge_eval.done")
 	if config["KrakenUniqPath"] != "":
 		listOfTools.append(config["path"] + "done/krakenuniq_eval.done")
+	if config["metacachePath"] != "":
+		listOfTools.append(config["path"] + "done/metacache_eval.done")
+	if config["ganonPath"] != "":
+		listOfTools.append(config["path"] + "done/ganon_eval.done")
 	
 	return listOfTools
 
@@ -136,3 +140,9 @@ if config["CentrifugePath"] != "":
 
 if config["KrakenUniqPath"] != "":
 	include: config["path"] + "rules/krakenU.smk"
+
+if config["metacachePath"] != "":
+	include: config["path"] + "rules/metacache.smk"
+
+if config["ganonPath"] != "":
+	include: config["path"] + "rules/ganon.smk"

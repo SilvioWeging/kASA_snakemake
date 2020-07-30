@@ -19,7 +19,7 @@ rule createIndex:
 	shell:
 		"""
 		mkdir -p {config[path]}index/kASA
-		{config[kASA]} build -c {input.contentFile} -d {config[path]}index/kASA/index -i {config[path]}genomes/ -t {config[path]}temporary/ -n {threads} -m {params.ram}
+		{config[kASA]} build -c {input.contentFile} -d {config[path]}index/kASA/index -i {config[path]}genomes/ -t {config[path]}temporary/ -n {threads} -m {params.ram} {config[kASAParameters]}
 		{config[kASA]} shrink -c {input.contentFile} -d  {config[path]}index/kASA/index -o {output.index} -s 2 -t {config[path]}temporary/
 		rm {config[path]}index/kASA/index
 		rm {config[path]}index/kASA/index_info.txt

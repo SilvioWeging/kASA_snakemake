@@ -19,6 +19,8 @@ Please keep the following in mind when using this pipeline: The genomes are down
 
 After each benchmark, you might want to use `.clean.sh` to remove all benchmark related files.
 
+Remember, that for Kraken/KrakenUniq Jellyfish needs to be in the PATH variable: `export PATH=path/to/krakenuniq/build/jellyfish-install/bin:$PATH`
+
 ## The different snakefiles
 
 ### benchmark
@@ -30,6 +32,10 @@ It downloads genomes given inside the content file, creates indices for every to
 The results are given inside the folder `results` (which is created during the benchmark). Scripts for the evaluation can be found inside the `scripts` folder. Measurements of time and memory consumption are saved inside the `benchmarks` folder for the index creation and identification step of every tool.
 
 If the evaluation of the Centrifuge script should fail then the building step of the tool had a hiccup and "forgot" to assign certain tax IDs. Just run the building step again and it should work...
+
+KrakenUniq has a bug in that it seems to take forever to build the index. If that should happen, just use the index from Kraken.
+
+Should you wish to make further thresholding experiments like we did in our ROC experiment for specificity vs sensitivity, call `scripts\evaluateWThreshold.sh` after changing the path inside the file to your path. Afterwars you can gather the results inside a table with `scripts\gatherThresholdResults.py <path> <prefix> <path for the resulting files>`.
 
 ### testAmbiguous
 

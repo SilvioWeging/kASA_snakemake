@@ -2,7 +2,7 @@
 
 appendToFileName = ""
 if largeFastqFlag:
-	appendToFileName = "merged.json"
+	appendToFileName = "merged.jsonl"
 
 rule createIndex:
 	input:

@@ -13,5 +13,7 @@
 "ClarkPath": "/path/to/clark/",
 "KrakenPath": "/path/to/kraken/build/",
 "CentrifugePath": "/path/to/Centrifuge/centrifuge/bin/",
-"KrakenUniqPath": "/path/to/krakenuniq/build/"
+"KrakenUniqPath": "/path/to/krakenuniq/build/",
+"metacachePath": "/path/to/metacache/",
+"ganonPath": "/path/to/ganon/bin/"
 }
