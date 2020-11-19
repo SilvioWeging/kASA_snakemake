@@ -5,8 +5,14 @@ def tools():
 	listOfTools = []
 	if config["Kraken2Path"] != "":
 		listOfTools.append(config["path"] + "done/kraken2_eval.done")
-	if config["kASA"] != "":
+	if config["kASA"] != "" and config["64"] == 1:
 		listOfTools.append(config["path"] + "done/kASA_eval.done")
+	if config["kASA"] != "" and config["shrink"] == 1:
+		listOfTools.append(config["path"] + "done/kASA_eval_shrink.done")
+	if config["kASA"] != "" and config["128"] == 1:
+		listOfTools.append(config["path"] + "done/kASA_128_eval.done")
+	if config["kASA"] != "" and config["alphabets"] == 1:
+		listOfTools.append(config["path"] + "done/kASA_eval_alphabets.done")
 	if config["ClarkPath"] != "":
 		listOfTools.append(config["path"] + "done/clark_eval.done")
 	if config["KrakenPath"] != "":
@@ -123,8 +129,17 @@ rule mutateAndGenerateFastq:
 
 largeFastqFlag=False
 
-if config["kASA"] != "":
+if config["kASA"] != "" and config["64"] == 1:
 	include: config["path"] + "rules/kASA.smk"
+
+if config["kASA"] != "" and config["shrink"] == 1:
+	include: config["path"] + "rules/kASA_shrink.smk"
+
+if config["kASA"] != "" and config["128"] == 1:
+	include: config["path"] + "rules/kASA_128.smk"
+
+if config["kASA"] != "" and config["alphabets"] == 1:
+	include: config["path"] + "rules/kASA_alphabet.smk"
 
 if config["Kraken2Path"] != "":
 	include: config["path"] + "rules/kraken2.smk"

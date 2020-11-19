@@ -11,16 +11,16 @@ rule clark_buildAndIdentify:
 		config["path"] + "benchmarks/clark_buildAndIdentify.txt"
 	shell:
 		"""
-		mkdir -p {config[path]}index/clark
-		mkdir -p {config[path]}index/clark/Custom
-		cp {config[path]}index/taxonomy/custom.accession2taxid {config[path]}index/taxonomy/nucl_accss
-		touch {config[path]}index/clark/.taxondata
-		ln -sf {config[path]}index/taxonomy/ {config[path]}index/clark/taxonomy
+		#mkdir -p {config[path]}index/clark
+		#mkdir -p {config[path]}index/clark/Custom
+		#cp {config[path]}index/taxonomy/custom.accession2taxid {config[path]}index/taxonomy/nucl_accss
+		#touch {config[path]}index/clark/.taxondata
+		#ln -sf {config[path]}index/taxonomy/ {config[path]}index/clark/taxonomy
 		
-		for file in {config[path]}genomes/*
-		do
-			cp ${{file}} {config[path]}index/clark/Custom/
-		done
+		#for file in {config[path]}genomes/*
+		#do
+		#	cp ${{file}} {config[path]}index/clark/Custom/
+		#done
 		{config[ClarkPath]}set_targets.sh {config[path]}index/clark custom --species
 		
 		path={config[path]}

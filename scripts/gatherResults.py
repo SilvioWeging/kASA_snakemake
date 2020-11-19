@@ -18,11 +18,15 @@ mutationrates = set()
 for file in os.listdir(path):
 	if "result" in file:
 		filenameArr = file.split("_")
-		if "kASA" in filenameArr:
-			#tool = filenameArr[0] + "_" + filenameArr[1]
-			#mutationrate = filenameArr[3]
-			tool = filenameArr[0]
-			mutationrate = filenameArr[2]
+		if "kASA" in filenameArr and ".json" not in filenameArr:
+			if len(filenameArr) == 5:
+				tool = filenameArr[0] + "_" + filenameArr[1]
+				mutationrate = filenameArr[3]
+			elif len(filenameArr) == 4:
+				tool = filenameArr[0]
+				mutationrate = filenameArr[2]
+			else:
+				continue
 		else:
 			if "metacache" in filenameArr[0]:
 				tool = "MetaCache"
@@ -63,11 +67,15 @@ for entry in mutationrates:
 for file in os.listdir(path):
 	if "result" in file:
 		filenameArr = file.split("_")
-		if "kASA" in filenameArr:
-			#tool = filenameArr[0] + "_" + filenameArr[1]
-			#mutationrate = filenameArr[3]
-			tool = filenameArr[0]
-			mutationrate = filenameArr[2]
+		if "kASA" in filenameArr and ".json" not in filenameArr:
+			if len(filenameArr) == 5:
+				tool = filenameArr[0] + "_" + filenameArr[1]
+				mutationrate = filenameArr[3]
+			elif len(filenameArr) == 4:
+				tool = filenameArr[0]
+				mutationrate = filenameArr[2]
+			else:
+				continue
 		else:
 			if "metacache" in filenameArr[0]:
 				tool = "MetaCache"
